@@ -1,48 +1,72 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
-import ChallengeCard from "../components/ChallengeCard";
+import { AuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
-export default function AllChallenges() {
-  const [list, setList] = useState([]);
-  const [q, setQ] = useState("");
+export default function AddChallenge() {
+  const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:3000/challenges")
-      .then(res => setList(res.data))
-      .catch(err => console.error("Error fetching challenges:", err));
-  }, []);
-
-  const handleSearch = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
+
+    const form = e.target;
+    const body = {
+      title: form.title.value,
+      category: form.category.value,
+      description: form.description.value,
+      duration: Number(form.duration.value),
+      target: form.target.value,
+      impactMetric: form.impactMetric.value,
+      createdBy: user?.email || "anonymous",
+      startDate: form.startDate.value,
+      endDate: form.endDate.value,
+      imageUrl: form.imageUrl.value,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      participants: 0,
+    };
+
     try {
-      const res = await axios.get(`http://localhost:3000/challenges?search=${encodeURIComponent(q)}`);
-      setList(res.data);
+      const token = await user.getIdToken();
+      await axios.post("http://localhost:3000/challenges", body, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Challenge created");
+      form.reset();
     } catch (err) {
-      console.error("Search failed:", err);
+      console.error(err);
+      toast.error("Failed to create challenge");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">All Challenges</h2>
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            className="input rounded-full px-3"
-            placeholder="Search"
-          />
-          <button className="px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-white">
-            Search
-          </button>
-        </form>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-        {list.map(item => <ChallengeCard key={item._id} challenge={item} />)}
-      </div>
+    <div className="max-w-2xl">
+      <h2 className="text-xl font-bold">Add New Challenge</h2>
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+        <input name="title" required placeholder="Title" className="input w-full" />
+        <input name="category" required placeholder="Category" className="input w-full" />
+        <textarea name="description" required placeholder="Description" className="textarea w-full"></textarea>
+        <div className="flex gap-2">
+          <input name="duration" type="number" required placeholder="Duration (days)" className="input flex-1" />
+          <input name="impactMetric" placeholder="Impact Metric (e.g. kg CO2)" className="input flex-1" />
+        </div>
+        <input name="target" placeholder="Target" className="input w-full" />
+        <div className="flex gap-2">
+          <input name="startDate" type="date" className="input" />
+          <input name="endDate" type="date" className="input" />
+        </div>
+        <input name="imageUrl" placeholder="Image URL" className="input w-full" />
+        <button
+          disabled={loading}
+          className="px-4 py-2 rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-white"
+        >
+          {loading ? "Saving..." : "Create Challenge"}
+        </button>
+      </form>
     </div>
   );
 }
