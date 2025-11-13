@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import ChallengeCard from "../../components/ChallengeCard";
-import TipCard from "../../components/TipCard";
-import EventCard from "../../components/EventCard";
+import axios from "axios";
+import ChallengeCard from "../components/ChallengeCard";
+import TipCard from "../components/TipCard";
+import EventCard from "../components/EventCard";
 
 export default function Home() {
   const [homeData, setHomeData] = useState({ challenges: [], tips: [], events: [], stats: {} });
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE || "http://localhost:3000/home"}`)
-      .then(res => res.json())
-      .then(data => setHomeData(data))
-      .catch(err => console.error(err));
+    axios
+      .get("http://localhost:3000/home")
+      .then(res => setHomeData(res.data))
+      .catch(err => console.error("Error loading home data:", err));
   }, []);
 
   return (
