@@ -1,14 +1,16 @@
-import React from 'react';
+import React from "react";
 
-export default function EventCard({ event }){
+export default function EventCard({ event }) {
   return (
-    <div className="bg-white p-3 rounded-lg shadow">
-      <div className="flex items-center justify-between">
-        <h5 className="font-semibold">{event.title}</h5>
-        <div className="text-xs text-gray-500">{new Date(event.date).toLocaleDateString()}</div>
+    <div className="bg-white rounded-lg shadow p-3">
+      <div className="flex justify-between items-start">
+        <div>
+          <h4 className="font-semibold text-sm">{event.title}</h4>
+          <div className="text-xs text-gray-500">{event.location}</div>
+        </div>
+        <div className="text-xs text-gray-400">{event.date ? new Date(event.date).toLocaleDateString() : ""}</div>
       </div>
-      <p className="mt-2 text-sm text-gray-600">{event.location}</p>
-      <p className="mt-2 text-sm text-gray-500">{(event.description || '').slice(0,120)}</p>
+      <p className="text-sm text-gray-600 mt-2 line-clamp-2">{event.description}</p>
     </div>
   );
 }
