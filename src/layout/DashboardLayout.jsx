@@ -1,5 +1,5 @@
-import React from "react";
-import { Outlet, Link } from "react-router";
+import React from 'react';
+import { Outlet, Link } from 'react-router';
 
 export default function DashboardLayout() {
   return (

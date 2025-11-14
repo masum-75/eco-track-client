@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+
 import { useNavigate, useLocation } from "react-router";
 import toast from "react-hot-toast";
+import { AuthContext } from "../context/AuthProvider";
 
 export default function Login() {
   const { signInUser, signInWithGoogle } = useContext(AuthContext);

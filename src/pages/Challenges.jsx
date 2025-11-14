@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ChallengeCard from "../components/ChallengeCard";
 
-export default function AllChallenges() {
+export default function Challenges() {
   const [list, setList] = useState([]);
   const [q, setQ] = useState("");
 

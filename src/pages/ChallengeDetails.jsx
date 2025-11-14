@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router";
-import { AuthContext } from "../context/AuthContext";
+
 import toast from "react-hot-toast";
+import { AuthContext } from "../context/AuthProvider";
 
 export default function ChallengeDetails() {
   const { id } = useParams();
@@ -11,11 +12,21 @@ export default function ChallengeDetails() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3000/challenges/${id}`)
-      .then(res => setChallenge(res.data))
-      .catch(() => {});
-  }, [id]);
+    async function fetchChallenge() {
+      try {
+        const headers = {};
+        if (user) {
+          const token = await user.getIdToken();
+          headers.Authorization = `Bearer ${token}`;
+        }
+        const res = await axios.get(`http://localhost:3000/challenges/${id}`, { headers });
+        setChallenge(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchChallenge();
+  }, [id, user]);
 
   async function handleJoin() {
     if (!user) return navigate("/login", { state: { from: `/challenges/${id}` } });
@@ -27,8 +38,9 @@ export default function ChallengeDetails() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Joined challenge successfully");
-
-      const updated = await axios.get(`http://localhost:3000/challenges/${id}`);
+      const updated = await axios.get(`http://localhost:3000/challenges/${id}`, {
+        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+      });
       setChallenge(updated.data);
     } catch (err) {
       console.error(err);

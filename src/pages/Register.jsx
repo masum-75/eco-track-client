@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import { AuthContext } from "../context/AuthProvider";
 
 export default function Register() {
   const { createUser, updateUserProfile, signInWithGoogle } = useContext(AuthContext);

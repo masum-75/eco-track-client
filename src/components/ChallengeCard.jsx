@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router";
+import React from 'react';
+import { Link } from 'react-router';
 
 export default function ChallengeCard({ challenge }) {
   const { title, category, description, duration, participants, imageUrl, _id } = challenge;
